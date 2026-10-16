@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathematical Cryptography | Caesar Cipher</title>
+<style>
+:root{
+  --bg:#07111f; --card:#0e1b2d; --card2:#12243a; --blue:#4cc9f0;
+  --yellow:#ffd83d; --green:#45e39a; --pink:#ff78b7; --text:#f4f8ff; --muted:#aebed1;
+}
+*{box-sizing:border-box;scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#06101d,#0a1830 55%,#07111f);color:var(--text)}
+nav{position:sticky;top:0;z-index:20;background:rgba(7,17,31,.9);backdrop-filter:blur(10px);border-bottom:1px solid #203753}
+.navin{max-width:1150px;margin:auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:1px;color:var(--yellow)}
+nav a{color:#dbe8f5;text-decoration:none;margin-left:18px;font-size:14px}
+nav a:hover{color:var(--blue)}
+.hero{max-width:1150px;margin:45px auto 25px;padding:20px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+.badge{display:inline-block;background:#172c48;border:1px solid #2d557c;color:var(--blue);padding:8px 13px;border-radius:999px;font-weight:700}
+h1{font-size:clamp(38px,6vw,72px);line-height:.95;margin:18px 0;color:#fff}
+h1 span{color:var(--yellow)}
+.hero p{font-size:18px;color:var(--muted);line-height:1.6}
+.btn{display:inline-block;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:800;margin:8px 8px 0 0}
+.primary{background:var(--yellow);color:#111}.secondary{border:1px solid #3a5b7d;color:#fff}
+.hero-card{background:var(--card);border:1px solid #29445f;border-radius:22px;padding:25px;box-shadow:0 20px 50px #0005}
+.flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.flow b{padding:10px 12px;border-radius:9px;background:#18324f}
+.arrow{color:var(--yellow);font-size:24px}
+section{max-width:1150px;margin:0 auto;padding:55px 20px}
+.section-title{font-size:34px;margin:0 0 10px}.section-sub{color:var(--muted);margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:linear-gradient(145deg,var(--card),var(--card2));border:1px solid #29445f;border-radius:18px;padding:22px}
+.card h3{margin-top:0;color:var(--blue)}.card p,.card li{color:#c6d4e4;line-height:1.55}
+.interactive{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px}
+.panel{background:var(--card);border:1px solid #29445f;border-radius:20px;padding:24px}
+label{display:block;font-weight:700;margin:12px 0 7px}
+input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid #355574;background:#081525;color:#fff;font-size:16px}
+textarea{min-height:120px;resize:vertical}
+button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:800;font-size:15px}
+.encrypt{background:var(--yellow);color:#111}.decrypt{background:var(--green);color:#082016}
+.result{margin-top:18px;padding:18px;border-radius:13px;background:#081525;border:1px dashed #4b6b88;min-height:65px;word-break:break-word;font-size:20px}
+.wheel-wrap{display:flex;justify-content:center;align-items:center;min-height:360px}
+.wheel{width:290px;height:290px;border-radius:50%;position:relative;background:repeating-conic-gradient(from -5deg,#ffd83d 0deg 9deg,#f0b72c 9deg 10deg);box-shadow:0 0 0 10px #2b4157,0 20px 40px #0008;transition:transform 1.15s cubic-bezier(.18,.75,.18,1)}
+.wheel:after{content:"";position:absolute;inset:45px;border-radius:50%;background:#29b957;border:5px solid #1c873f;box-shadow:inset 0 0 20px #06451c}
+.wheel-center{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);width:55px;height:55px;border-radius:50%;background:#c9972e;border:4px solid #825d10;box-shadow:0 3px 8px #0008}
+.letters{position:absolute;inset:0;z-index:4;pointer-events:none}
+.letter{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:19px;height:21px;margin-left:-9px;margin-top:-10px;border-radius:50%;font-weight:900;color:#1a1a1a;font-size:11px;transform-origin:center;transition:background .2s,color .2s,box-shadow .2s; }
+.pointer{position:absolute;z-index:8;top:-18px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:30px solid #ef3340}
+.keybox{margin-top:15px;text-align:center;color:var(--muted)}
+.model-img{width:100%;border-radius:16px;border:1px solid #355574;display:block}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step{padding:18px;border-radius:15px;background:#0d1c2e;border:1px solid #29445f}
+.num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--yellow);color:#111;font-weight:900}
+.step h4{margin:12px 0 7px}.step p{color:#b9c9da;line-height:1.5}
+footer{padding:35px 20px;text-align:center;color:#9fb0c3;border-top:1px solid #203753}
+@media(max-width:800px){.hero,.interactive{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}nav .links{display:none}}
+@media(max-width:500px){.steps{grid-template-columns:1fr}.wheel{width:240px;height:240px}.letter{width:17px;height:19px;margin-left:-8px;margin-top:-9px;font-size:10px}}
+
+.range-row{display:grid;grid-template-columns:1fr 72px;gap:12px;align-items:center}
+input[type="range"]{padding:0;accent-color:var(--yellow);cursor:pointer}
+.shift-value{padding:10px;border-radius:10px;background:#081525;border:1px solid #355574;text-align:center;font-weight:900;color:var(--yellow)}
+.action-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.utility{background:#19324b;color:#fff;border:1px solid #355574}
+.utility:hover{border-color:var(--blue)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.stat{background:#081525;border:1px solid #29445f;border-radius:13px;padding:15px;text-align:center}
+.stat strong{display:block;font-size:25px;color:var(--yellow);margin-bottom:5px}
+.stat span{color:var(--muted);font-size:13px}
+.history{margin-top:20px}
+.history-list{display:grid;gap:9px}
+.history-item{padding:12px 14px;background:#081525;border:1px solid #29445f;border-radius:10px;overflow-wrap:anywhere}
+.history-item strong{color:var(--blue)}
+.history-item small{display:block;color:var(--muted);margin-top:5px}
+.empty-history{color:var(--muted);padding:14px;border:1px dashed #355574;border-radius:10px}
+@media(max-width:500px){.stats{grid-template-columns:1fr}.range-row{grid-template-columns:1fr 65px}}
+
+
+.frequency-panel{margin-top:22px;background:var(--card);border:1px solid #29445f;border-radius:20px;padding:24px}
+.frequency-panel h3{color:var(--blue);margin-top:0}
+.frequency-summary{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 18px}
+.frequency-pill{background:#081525;border:1px solid #29445f;border-radius:10px;padding:10px 13px;color:var(--muted)}
+.frequency-pill strong{color:var(--yellow)}
+.frequency-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+.frequency-row{display:grid;grid-template-columns:24px 1fr 34px;gap:9px;align-items:center;font-size:14px}
+.frequency-row .letter-label{font-weight:900;color:var(--yellow)}
+.frequency-track{height:10px;border-radius:99px;background:#20344b;overflow:hidden}
+.frequency-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--yellow));border-radius:99px}
+.frequency-count{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.analysis-note{color:var(--muted);font-size:13px;line-height:1.5}
+@media(max-width:600px){.frequency-list{grid-template-columns:1fr}.frequency-panel{padding:18px}}
+
+
+/* Live wheel mapping highlights: original character and transformed character */
+.letter{display:inline-grid;place-items:center;width:clamp(15px, 6.8vw, 25px);height:clamp(15px, 6.8vw, 25px);border-radius:50%;font-size:clamp(9px, 2.8vw, 12px);transition:background .18s,color .18s,box-shadow .18s,transform .18s}
+.letter.original-highlight{background:#fff;color:#101820!important;box-shadow:0 0 0 2px #ffd83d,0 0 14px #ffd83d;z-index:6}
+.letter.output-highlight{background:#45e39a;color:#082016!important;box-shadow:0 0 0 2px #45e39a,0 0 14px #45e39a;z-index:7;transform:scale(1.22)}
+.letter.original-highlight.output-highlight{background:linear-gradient(135deg,#ffd83d 0 50%,#45e39a 50% 100%);color:#08111c!important}
+.wheel-map{margin:14px auto 0;max-width:360px;padding:14px;border:1px solid #355574;background:#081525;border-radius:14px;text-align:center}
+.wheel-map .map-title{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.wheel-map .map-pair{display:flex;align-items:center;justify-content:center;gap:12px;font-size:22px;font-weight:900;min-height:38px}
+.map-original{color:var(--yellow)} .map-output{color:var(--green)}
+.wheel-legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:12px}
+.wheel-legend span{display:inline-flex;align-items:center;gap:6px}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend-original{background:var(--yellow)} .legend-output{background:var(--green)}
+
+</style>
+</head>
+<body>
+<nav>
+  <div class="navin">
+    <div class="logo">🔐 ∑ MATHEMATICAL CRYPTOGRAPHY</div>
+    <div class="links">
+      <a href="#about">About</a><a href="#math">Mathematics</a><a href="#demo">Demo</a><a href="#model">Model</a><a href="#steps">Making</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <span class="badge">CLASS XI PROJECT • WORKING MODEL</span>
+    <h1>Cryptography<br><span>Technology</span></h1>
+    <p>Explore how a Caesar Cipher turns readable messages into encrypted text and back again using a simple key.</p>
+    <a class="btn primary" href="#demo">Try the Cipher</a>
+    <a class="btn secondary" href="#model">View My Model</a>
+  </div>
+  <div class="hero-card">
+    <div class="flow">
+      <b>Plain Text</b><span class="arrow">→</span><b>Encryption</b><span class="arrow">→</span>
+      <b>Cipher Text</b><span class="arrow">→</span><b>Decryption</b><span class="arrow">→</span><b>Plain Text</b>
+    </div>
+    <p style="text-align:center;margin-bottom:0;color:#9fb0c3">Key used in the physical model: <strong style="color:#ffd83d">Shift +3</strong></p>
+  </div>
+</header>
+
+<section id="about">
+  <h2 class="section-title">What is Cryptography?</h2>
+  <p class="section-sub">A simple explanation behind the working model.</p>
+  <div class="grid">
+    <div class="card"><h3>🔒 Encryption</h3><p>Encryption changes plain text into a form that is difficult for an unauthorized person to understand. A key controls the transformation.</p></div>
+    <div class="card"><h3>🔑 The Key</h3><p>In a Caesar Cipher, the key is a number that tells us how many positions each letter should move in the alphabet.</p></div>
+    <div class="card"><h3>🔓 Decryption</h3><p>Decryption reverses the shift and converts the cipher text back into the original message.</p></div>
+  </div>
+</section>
+
+<section id="math"><h2 class="section-title">The Mathematics Behind the Caesar Cipher</h2><p class="section-sub">Letters, digits and common keyboard symbols rotate within separate groups using modular arithmetic.</p><div class="grid"><div class="card"><h3>Alphabet as Numbers</h3><p>A=0, B=1, C=2, ... Z=25.</p><div class="result">A = 0 &nbsp; B = 1 &nbsp; ... &nbsp; Z = 25</div></div><div class="card"><h3>Encryption</h3><p>For letters, add the key K to the letter value P (mod 26). Digits and symbols rotate within their own groups.</p><div class="result">C = (P + K) mod 26</div></div><div class="card"><h3>Decryption</h3><p>For letters, subtract the key K from the cipher-text value C (mod 26). Digits and symbols rotate back within their groups.</p><div class="result">P = (C - K) mod 26</div></div></div><div class="card" style="margin-top:18px"><h3>Worked Example: H → K</h3><p>H has value 7. With K = 3:</p><div class="result">C = (7 + 3) mod 26 = 10 → K</div></div></section><section id="demo">
+  <h2 class="section-title">Interactive Caesar Cipher</h2>
+  <p class="section-sub">Encrypt or decrypt letters, numbers and common keyboard symbols. The frequency analysis updates as you type.</p>
+  <div class="interactive">
+    <div class="panel">
+      <label for="message">Message</label>
+      <textarea id="message" placeholder="Example: HELLO"></textarea>
+      <label for="shiftRange">Key / Shift (−25 to +25)</label>
+      <div class="range-row">
+        <input id="shiftRange" type="range" value="3" min="-25" max="25" step="1" aria-label="Choose shift value">
+        <div class="shift-value" id="shiftValue">+3</div>
+      </div>
+      <input id="shift" type="number" value="3" min="-25" max="25" aria-label="Shift number" style="margin-top:10px">
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button class="encrypt" onclick="runCipher(1)">🔐 Encrypt</button>
+        <button class="decrypt" onclick="runCipher(-1)">🔓 Decrypt</button>
+      </div>
+      <div class="result" id="result" aria-live="polite">Your result will appear here.</div>
+      <div class="action-row">
+        <button class="utility" onclick="copyResult()">📋 Copy Result</button>
+        <button class="utility" onclick="resetCipher()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="wheel-wrap">
+        <div class="wheel" id="wheel">
+          <div class="pointer"></div>
+          <div class="letters" id="outerLetters"></div>
+          <div class="wheel-center"></div>
+        </div>
+      </div>
+      <div class="keybox" id="wheelStatus" aria-live="polite">↻ Enter a message and encrypt or decrypt to watch the wheel follow each character.</div>
+      <div class="wheel-map" aria-live="polite">
+        <div class="map-title" id="mapTitle">Character mapping</div>
+        <div class="map-pair"><span class="map-original" id="mapOriginal">H</span><span aria-hidden="true">→</span><span class="map-output" id="mapOutput">K</span></div>
+        <div class="wheel-legend"><span><i class="legend-dot legend-original"></i>Original</span><span><i class="legend-dot legend-output"></i>Encrypted / decrypted</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="stats" aria-label="Session statistics">
+    <div class="stat"><strong id="totalRuns">0</strong><span>Operations this session</span></div>
+    <div class="stat"><strong id="encryptRuns">0</strong><span>Encryptions</span></div>
+    <div class="stat"><strong id="decryptRuns">0</strong><span>Decryptions</span></div>
+  </div>
+  <div class="history">
+    <h3 style="color:var(--blue)">Recent Activity</h3>
+    <div class="history-list" id="historyList"><div class="empty-history">Your recent encryptions and decryptions will appear here.</div></div>
+  </div>
+  <div class="frequency-panel" id="frequencyAnalysis">
+    <h3>📊 Message Frequency Analysis</h3>
+    <p class="analysis-note">Counts the letters in the message above, ignoring uppercase/lowercase differences. This updates as you type. It analyzes the original message, not the encrypted result.</p>
+    <div class="frequency-summary">
+      <div class="frequency-pill">Letters: <strong id="letterTotal">0</strong></div>
+      <div class="frequency-pill">Most frequent: <strong id="mostFrequent">—</strong></div>
+      <div class="frequency-pill">Numbers: <strong id="digitTotal">0</strong></div>
+      <div class="frequency-pill">Symbols: <strong id="symbolTotal">0</strong></div>
+    </div>
+    <div class="frequency-list" id="frequencyList"><div class="empty-history">Type a message to see letter frequencies.</div></div>
+  </div>
+</section>
+
+<section id="model">
+  <h2 class="section-title">My Working Model</h2>
+  <p class="section-sub">The physical project demonstrates the same idea using a rotating alphabet wheel, buttons, LEDs, sender and receiver boxes.</p>
+  <img class="model-img" src="project-model.png" alt="Mathematical Cryptography Caesar Cipher working model">
+</section>
+
+<section id="steps">
+  <h2 class="section-title">How the Model Works</h2>
+  <p class="section-sub">The physical and digital versions follow the same basic process.</p>
+  <div class="steps">
+    <div class="step"><span class="num">1</span><h4>Enter Plain Text</h4><p>The sender starts with a readable message such as HELLO.</p></div>
+    <div class="step"><span class="num">2</span><h4>Choose the Key</h4><p>The wheel is set to a shift value, such as +3.</p></div>
+    <div class="step"><span class="num">3</span><h4>Encrypt</h4><p>Letters, digits and common keyboard symbols rotate forward within their own groups by the selected shift. Spaces and emoji remain unchanged.</p></div>
+    <div class="step"><span class="num">4</span><h4>Decrypt</h4><p>The receiver applies the reverse shift to recover the original message.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">Applications of Cryptography</h2>
+  <div class="grid">
+    <div class="card"><h3>🏦 Online Banking</h3><p>Helps protect financial information during digital communication.</p></div>
+    <div class="card"><h3>✉️ Email Security</h3><p>Encryption can help keep sensitive communication private.</p></div>
+    <div class="card"><h3>📱 Secure Messaging</h3><p>Modern communication systems use advanced cryptographic methods to protect messages.</p></div>
+    <div class="card"><h3>✍️ Digital Signatures</h3><p>Cryptography helps verify the authenticity and integrity of digital information.</p></div>
+    <div class="card"><h3>🛡️ Personal Data</h3><p>Passwords and sensitive information can be protected using cryptographic techniques.</p></div>
+    <div class="card"><h3>🌐 Digital World</h3><p>Cryptography is a foundation of modern cybersecurity.</p></div>
+  </div>
+</section>
+
+
+<section id="scan-qr" class="qr-section">
+  <div class="qr-card">
+    <h2 class="section-title">Scan to Open the Cipher Tool</h2>
+    <p class="section-sub">Use your phone camera to scan the QR code.</p>
+    <img class="qr-image" src="data:image/png;base64,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" alt="QR code for the Caesar Cipher website">
+    <p class="qr-note">If scanning does not open the website, check that the QR code points to the published website URL.</p>
+  </div>
+</section>
+<style>
+.qr-section{padding-top:35px;padding-bottom:45px;text-align:center}
+.qr-card{max-width:560px;margin:0 auto;background:var(--card);border:1px solid #29445f;border-radius:20px;padding:26px;box-shadow:0 18px 45px #0004}
+.qr-card .section-sub{margin-bottom:18px}
+.qr-image{display:block;width:min(260px,75vw);height:auto;aspect-ratio:1;object-fit:contain;background:#fff;padding:12px;border-radius:12px;margin:0 auto;border:1px solid #dbe6f0}
+.qr-note{color:var(--muted);font-size:13px;line-height:1.5;margin:16px auto 0;max-width:420px}
+@media(max-width:500px){.qr-card{padding:20px 14px}}
+</style>
+
+<footer>
+  <strong>Mathematical Cryptography — Caesar Cipher</strong><br>
+  Class XI Working Model • Educational Project
+</footer>
+
+<script>
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const digits = "0123456789";
+const wheelChars = alphabet + digits;
+const outer = document.getElementById("outerLetters");
+
+// The wheel has all 26 letters and all 10 digits on one ring.
+for (let i = 0; i < wheelChars.length; i++) {
+  const ch = wheelChars[i];
+  const el = document.createElement("span");
+  el.className = "letter";
+  const angle = i * 360 / wheelChars.length;
+  const radius = Math.min(125, document.getElementById("wheel").clientWidth * 0.405);
+  el.textContent = ch;
+  el.dataset.char = ch;
+  el.setAttribute("aria-label", ch);
+  el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
+  outer.appendChild(el);
+}
+
+function positionWheelLetters(){
+  const size = document.getElementById("wheel").clientWidth;
+  const radius = Math.max(55, Math.min(125, size * 0.405));
+  outer.querySelectorAll(".letter").forEach((el, i) => {
+    const angle = i * 360 / wheelChars.length;
+    el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
+  });
+}
+positionWheelLetters();
+window.addEventListener("resize", positionWheelLetters, { passive: true });
+
+// Letters, digits, and common keyboard symbols each rotate within their own group.
+const symbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
+function rotateCharacter(ch, set, shift) {
+  const idx = set.indexOf(ch);
+  if (idx === -1) return ch;
+  const amount = ((shift % set.length) + set.length) % set.length;
+  return set[(idx + amount) % set.length];
+}
+
+function caesar(text, shift) {
+  return [...text].map(ch => {
+    if (/[A-Z]/.test(ch)) return rotateCharacter(ch, alphabet, shift);
+    if (/[a-z]/.test(ch)) return rotateCharacter(ch.toUpperCase(), alphabet, shift).toLowerCase();
+    if (/[0-9]/.test(ch)) return rotateCharacter(ch, digits, shift);
+    if (symbols.includes(ch)) return rotateCharacter(ch, symbols, shift);
+    // Spaces, line breaks, emoji and other unsupported Unicode characters remain unchanged.
+    return ch;
+  }).join("");
+}
+
+let totalRuns = 0;
+let encryptRuns = 0;
+let decryptRuns = 0;
+const activity = [];
+
+const shiftInput = document.getElementById("shift");
+const shiftRange = document.getElementById("shiftRange");
+const shiftValue = document.getElementById("shiftValue");
+
+function setShift(value){
+  let n = Number.parseInt(value, 10);
+  if (!Number.isFinite(n)) n = 3;
+  n = Math.max(-25, Math.min(25, n));
+  shiftInput.value = n;
+  shiftRange.value = n;
+  shiftValue.textContent = n > 0 ? `+${n}` : String(n);
+}
+shiftInput.addEventListener("input", () => setShift(shiftInput.value));
+shiftRange.addEventListener("input", () => setShift(shiftRange.value));
+setShift(3);
+
+let wheelAnimationToken = 0;
+const wheelStatus = document.getElementById("wheelStatus");
+const wheel = document.getElementById("wheel");
+const wheelDelay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function getCharacterSet(ch) {
+  if (/[A-Z]/i.test(ch)) return alphabet;
+  if (/[0-9]/.test(ch)) return digits;
+  if (symbols.includes(ch)) return symbols;
+  return null;
+}
+
+function clearWheelHighlights(){
+  document.querySelectorAll(".letter.original-highlight, .letter.output-highlight").forEach(el => {
+    el.classList.remove("original-highlight", "output-highlight");
+  });
+}
+
+function wheelChar(ch) {
+  if (/[a-z]/i.test(ch)) return ch.toUpperCase();
+  if (/[0-9]/.test(ch)) return ch;
+  return null;
+}
+
+async function animateWheelForMessage(message, shift, direction) {
+  const token = ++wheelAnimationToken;
+  const supported = [...message].map(ch => ({ ch, from: wheelChar(ch) }))
+    .filter(item => item.from !== null);
+  clearWheelHighlights();
+
+  if (!supported.length) {
+    wheelStatus.textContent = "Enter letters A–Z or digits 0–9 to highlight them on the wheel. Spaces and symbols stay unchanged.";
+    document.getElementById("mapTitle").textContent = "No wheel characters";
+    document.getElementById("mapOriginal").textContent = "—";
+    document.getElementById("mapOutput").textContent = "—";
+    return;
+  }
+
+  // Highlight every original and transformed character at once, including repeated characters.
+  const mappings = [];
+  for (const { ch, from } of supported) {
+    const set = /[A-Z]/.test(from) ? alphabet : digits;
+    const transformed = rotateCharacter(from, set, shift);
+    const originalEl = document.querySelector(`.letter[data-char="${from}"]`);
+    const outputEl = document.querySelector(`.letter[data-char="${transformed}"]`);
+    if (originalEl) originalEl.classList.add("original-highlight");
+    if (outputEl) outputEl.classList.add("output-highlight");
+    mappings.push(`${ch} → ${/[a-z]/.test(ch) ? transformed.toLowerCase() : transformed}`);
+  }
+
+  document.getElementById("mapTitle").textContent = `All ${supported.length} character${supported.length === 1 ? "" : "s"} highlighted`;
+  document.getElementById("mapOriginal").textContent = supported.map(x => x.ch).join("");
+  document.getElementById("mapOutput").textContent = caesar(message, shift);
+
+  // Spin automatically, then leave all mapped letters and digits glowing together.
+  const current = Number(wheel.dataset.rotation || 0);
+  const slotAngle = 360 / wheelChars.length;
+  const target = current + (direction >= 0 ? 2 : -2) * 360 + (shift * slotAngle);
+  wheel.dataset.rotation = String(target);
+  wheel.style.transform = `rotate(${target}deg)`;
+  wheelStatus.textContent = `Complete mapping: ${mappings.join("  •  ")}  |  Shift ${shift > 0 ? "+" : ""}${shift}`;
+}
+
+function runCipher(direction){
+  const msg = document.getElementById("message").value;
+  if (!msg.trim()) {
+    document.getElementById("result").textContent = "Enter a message first.";
+    document.getElementById("message").focus();
+    return;
+  }
+  const shift = Number.parseInt(shiftInput.value, 10) || 0;
+  const finalShift = direction * shift;
+  const output = caesar(msg, finalShift);
+  document.getElementById("result").textContent = output;
+  animateWheelForMessage(msg, finalShift, direction);
+
+  totalRuns++;
+  if (direction === 1) encryptRuns++; else decryptRuns++;
+  document.getElementById("totalRuns").textContent = totalRuns;
+  document.getElementById("encryptRuns").textContent = encryptRuns;
+  document.getElementById("decryptRuns").textContent = decryptRuns;
+
+  activity.unshift({type: direction === 1 ? "Encryption" : "Decryption", shift: finalShift, input: msg, output});
+  if (activity.length > 5) activity.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  const list = document.getElementById("historyList");
+  list.replaceChildren();
+  if (!activity.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-history";
+    empty.textContent = "Your recent encryptions and decryptions will appear here.";
+    list.appendChild(empty);
+    return;
+  }
+  activity.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "history-item";
+    const heading = document.createElement("strong");
+    heading.textContent = `${item.type} • Shift ${item.shift > 0 ? "+" : ""}${item.shift}`;
+    const details = document.createElement("div");
+    details.textContent = `${item.input} → ${item.output}`;
+    const note = document.createElement("small");
+    note.textContent = "Kept only during this app session.";
+    card.append(heading, details, note);
+    list.appendChild(card);
+  });
+}
+
+async function copyResult(){
+  const text = document.getElementById("result").textContent;
+  if (!text || text === "Your result will appear here." || text === "Enter a message first.") return;
+  try {
+    await navigator.clipboard.writeText(text);
+    const button = document.querySelector(".action-row button");
+    const previous = button.textContent;
+    button.textContent = "✓ Copied!";
+    setTimeout(() => button.textContent = previous, 1400);
+  } catch (err) {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.style.position = "fixed";
+    helper.style.opacity = "0";
+    document.body.appendChild(helper);
+    helper.select();
+    const copied = document.execCommand("copy");
+    helper.remove();
+    const button = document.querySelector(".action-row button");
+    button.textContent = copied ? "✓ Copied!" : "Copy manually";
+    setTimeout(() => button.textContent = "📋 Copy Result", 1400);
+  }
+}
+
+function updateFrequencyAnalysis() {
+  const message = document.getElementById("message").value;
+  const counts = Object.fromEntries([...alphabet].map(letter => [letter, 0]));
+  let digitTotal = 0;
+  let symbolTotal = 0;
+  let letterTotal = 0;
+
+  for (const ch of message) {
+    if (/[a-z]/i.test(ch) && ch.toUpperCase() in counts) {
+      counts[ch.toUpperCase()]++;
+      letterTotal++;
+    } else if (/[0-9]/.test(ch)) {
+      digitTotal++;
+    } else if (symbols.includes(ch)) {
+      symbolTotal++;
+    }
+  }
+
+  document.getElementById("letterTotal").textContent = letterTotal;
+  document.getElementById("digitTotal").textContent = digitTotal;
+  document.getElementById("symbolTotal").textContent = symbolTotal;
+
+  const highest = Math.max(0, ...Object.values(counts));
+  const topLetters = highest > 0
+    ? [...alphabet].filter(letter => counts[letter] === highest).map(letter => `${letter} (${highest})`).join(", ")
+    : "—";
+  document.getElementById("mostFrequent").textContent = topLetters;
+
+  const list = document.getElementById("frequencyList");
+  list.replaceChildren();
+  if (letterTotal === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty-history";
+    empty.textContent = "Type a message containing English letters to see letter frequencies.";
+    list.appendChild(empty);
+    return;
+  }
+
+  // Show all letters, including those with zero occurrences, to make comparison easy.
+  [...alphabet].forEach(letter => {
+    const count = counts[letter];
+    const row = document.createElement("div");
+    row.className = "frequency-row";
+    const label = document.createElement("span");
+    label.className = "letter-label";
+    label.textContent = letter;
+    const track = document.createElement("div");
+    track.className = "frequency-track";
+    const bar = document.createElement("div");
+    bar.className = "frequency-bar";
+    bar.style.width = `${highest ? (count / highest) * 100 : 0}%`;
+    track.appendChild(bar);
+    const value = document.createElement("span");
+    value.className = "frequency-count";
+    value.textContent = count;
+    row.append(label, track, value);
+    list.appendChild(row);
+  });
+}
+
+document.getElementById("message").addEventListener("input", updateFrequencyAnalysis);
+updateFrequencyAnalysis();
+
+function resetCipher(){
+  wheelAnimationToken++;
+  document.getElementById("message").value = "";
+  document.getElementById("result").textContent = "Your result will appear here.";
+  setShift(3);
+  wheel.style.transform = "rotate(0deg)";
+  wheel.dataset.rotation = "0";
+  clearWheelHighlights();
+  document.getElementById("mapTitle").textContent = "Character mapping";
+  document.getElementById("mapOriginal").textContent = "H";
+  document.getElementById("mapOutput").textContent = "K";
+  wheelStatus.textContent = "↻ Enter a message and encrypt or decrypt to watch the wheel follow each character.";
+  document.getElementById("message").focus();
+  updateFrequencyAnalysis();
+}
+</script>
+</body>
+</html>
