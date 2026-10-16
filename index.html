@@ -92,7 +92,7 @@ input[type="range"]{padding:0;accent-color:var(--yellow);cursor:pointer}
 
 
 /* Live wheel mapping highlights: original character and transformed character */
-.letter{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;transition:background .18s,color .18s,box-shadow .18s,transform .18s}
+.letter{display:inline-grid;place-items:center;width:clamp(15px, 6.8vw, 25px);height:clamp(15px, 6.8vw, 25px);border-radius:50%;font-size:clamp(9px, 2.8vw, 12px);transition:background .18s,color .18s,box-shadow .18s,transform .18s}
 .letter.original-highlight{background:#fff;color:#101820!important;box-shadow:0 0 0 2px #ffd83d,0 0 14px #ffd83d;z-index:6}
 .letter.output-highlight{background:#45e39a;color:#082016!important;box-shadow:0 0 0 2px #45e39a,0 0 14px #45e39a;z-index:7;transform:scale(1.22)}
 .letter.original-highlight.output-highlight{background:linear-gradient(135deg,#ffd83d 0 50%,#45e39a 50% 100%);color:#08111c!important}
@@ -234,6 +234,24 @@ input[type="range"]{padding:0;accent-color:var(--yellow);cursor:pointer}
   </div>
 </section>
 
+
+<section id="scan-qr" class="qr-section">
+  <div class="qr-card">
+    <h2 class="section-title">Scan to Open the Cipher Tool</h2>
+    <p class="section-sub">Use your phone camera to scan the QR code.</p>
+    <img class="qr-image" src="data:image/png;base64,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" alt="QR code for the Caesar Cipher website">
+    <p class="qr-note">If scanning does not open the website, check that the QR code points to the published website URL.</p>
+  </div>
+</section>
+<style>
+.qr-section{padding-top:35px;padding-bottom:45px;text-align:center}
+.qr-card{max-width:560px;margin:0 auto;background:var(--card);border:1px solid #29445f;border-radius:20px;padding:26px;box-shadow:0 18px 45px #0004}
+.qr-card .section-sub{margin-bottom:18px}
+.qr-image{display:block;width:min(260px,75vw);height:auto;aspect-ratio:1;object-fit:contain;background:#fff;padding:12px;border-radius:12px;margin:0 auto;border:1px solid #dbe6f0}
+.qr-note{color:var(--muted);font-size:13px;line-height:1.5;margin:16px auto 0;max-width:420px}
+@media(max-width:500px){.qr-card{padding:20px 14px}}
+</style>
+
 <footer>
   <strong>Mathematical Cryptography — Caesar Cipher</strong><br>
   Class XI Working Model • Educational Project
@@ -251,13 +269,24 @@ for (let i = 0; i < wheelChars.length; i++) {
   const el = document.createElement("span");
   el.className = "letter";
   const angle = i * 360 / wheelChars.length;
-  const radius = 125;
+  const radius = Math.min(125, document.getElementById("wheel").clientWidth * 0.405);
   el.textContent = ch;
   el.dataset.char = ch;
   el.setAttribute("aria-label", ch);
   el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
   outer.appendChild(el);
 }
+
+function positionWheelLetters(){
+  const size = document.getElementById("wheel").clientWidth;
+  const radius = Math.max(55, Math.min(125, size * 0.405));
+  outer.querySelectorAll(".letter").forEach((el, i) => {
+    const angle = i * 360 / wheelChars.length;
+    el.style.transform = `rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
+  });
+}
+positionWheelLetters();
+window.addEventListener("resize", positionWheelLetters, { passive: true });
 
 // Letters, digits, and common keyboard symbols each rotate within their own group.
 const symbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
